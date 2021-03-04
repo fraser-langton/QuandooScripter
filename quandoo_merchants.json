@@ -1,0 +1,38 @@
+[
+  {
+    "merchant_id": "49293",
+    "merchant_name": "Rockpool",
+    "archtics_code": "DIRP",
+    "reservation_tag": "Pre-Paid Package"
+  },
+  {
+    "merchant_id": "49298",
+    "merchant_name": "Penfolds",
+    "archtics_code": "DIPN",
+    "reservation_tag": "Pre-Paid Package"
+  },
+  {
+    "merchant_id": "49296",
+    "merchant_name": "Chef_Series",
+    "archtics_code": "DICS",
+    "reservation_tag": "Pre-Paid Package"
+  },
+  {
+    "merchant_id": "49296",
+    "merchant_name": "Atlas",
+    "archtics_code": "DIAT",
+    "reservation_tag": "Pre-Paid Package"
+  },
+  {
+    "merchant_id": "49294",
+    "merchant_name": "Atrium",
+    "archtics_code": "DATR",
+    "reservation_tag": "Atrium Package"
+  },
+  {
+    "merchant_id": "49294",
+    "merchant_name": "Atrium_Scott_Pickett",
+    "archtics_code": "DICH",
+    "reservation_tag": "Scott Pickett Package"
+  }
+]
