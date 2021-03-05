@@ -1,10 +1,8 @@
 import json
 import os
 import re
-from datetime import datetime
 
 import pandas as pd
-import tzlocal
 from dateutil.parser import parse
 
 import quandoo
@@ -12,12 +10,26 @@ from quandoo.QuandooModel import QuandooDatetime
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
-AUTH_TOKEN = os.environ.get('AUTH_TOKEN')
-AGENT_ID = os.environ.get('AGENT_ID')
+try:
+    load_dotenv()
+    AUTH_TOKEN = os.environ.get('AUTH_TOKEN')
+    AGENT_ID = os.environ.get('AGENT_ID')
+except Exception as e:
+    input(e)
 
 SKIP_ALL = False
+
+
+def main():
+    quandoo_bookings = get_quandoo_bookings()
+    archtics_bookings = get_archtics_bookings()
+    quandoo_merchants = get_quandoo_merchants()
+
+    update_res_tags(quandoo_merchants)
+    cancelled_orders(quandoo_bookings, archtics_bookings, quandoo_merchants)
+    new_bookings(quandoo_bookings, archtics_bookings, quandoo_merchants)
+
+    print()
 
 
 def get_quandoo_bookings():
@@ -200,17 +212,8 @@ def update_res_tags(quandoo_merchants):
         json.dump(d, f)
 
 
-def main():
-    quandoo_bookings = get_quandoo_bookings()
-    archtics_bookings = get_archtics_bookings()
-    quandoo_merchants = get_quandoo_merchants()
-
-    update_res_tags(quandoo_merchants)
-    cancelled_orders(quandoo_bookings, archtics_bookings, quandoo_merchants)
-    new_bookings(quandoo_bookings, archtics_bookings, quandoo_merchants)
-
-    print()
-
-
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        input(e)
