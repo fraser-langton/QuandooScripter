@@ -79,5 +79,5 @@ Copy `venv\Scripts\python run.py` and press Enter
 ## FAQ
 
 ##### Q. I want to add a new restaurant
-A. See [Getting started - 3. Configure integration](#3.-Configure-integration), add an entry
+A. See [Getting started - 3. Configure integration](#3-configure-integration), add an entry
 
