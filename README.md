@@ -58,7 +58,20 @@ AGENT_ID=<agent_id>
 In the project directory (QuandooScripter-master) open a **PowerShell Window** 
 ![alt text](https://i.ibb.co/2W87rPN/Screenshot-2021-03-05-111917.png)
 
-
 Copy `python -m venv venv` and press Enter
 
 Copy `venv\Scripts\pip install -r requirements.txt` and press Enter
+
+
+## Running
+
+### 1. Obtain latest quandoo report from archtics
+
+### 2. Paste (and replace) new quandoo.csv
+
+### 3. Run program
+In the project directory (QuandooScripter-master) open a **PowerShell Window** 
+![alt text](https://i.ibb.co/2W87rPN/Screenshot-2021-03-05-111917.png)
+
+Copy `venv\Scripts\python run.py` and press Enter
+ 
