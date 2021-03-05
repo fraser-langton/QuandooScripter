@@ -1,8 +1,10 @@
+import argparse
 import sys
 import traceback
 import json
 import os
 import re
+from datetime import datetime
 
 import pandas as pd
 from dateutil.parser import parse
@@ -14,18 +16,47 @@ from dotenv import load_dotenv
 
 
 SKIP_ALL = False
+AUTH_TOKEN, AGENT_ID = None, None
+
+class UserError(Exception):
+    pass
 
 
 def main():
-    quandoo_bookings = get_quandoo_bookings()
-    archtics_bookings = get_archtics_bookings()
-    quandoo_merchants = get_quandoo_merchants()
+    try:
+        load_dotenv()
+        global AUTH_TOKEN, AGENT_ID
+        AUTH_TOKEN = os.environ.get('AUTH_TOKEN')
+        AGENT_ID = os.environ.get('AGENT_ID')
+        if not all([AUTH_TOKEN, AGENT_ID]):
+            raise UserError(f'"AUTH_TOKEN" and/or "AGENT_ID" not in .env file, ensure these are added https://github.com/fraser-langton/QuandooScripter#env')
 
-    update_res_tags(quandoo_merchants)
-    cancelled_orders(quandoo_bookings, archtics_bookings, quandoo_merchants)
-    new_bookings(quandoo_bookings, archtics_bookings, quandoo_merchants)
+        quandoo_bookings = get_quandoo_bookings()
+        archtics_bookings = get_archtics_bookings()
+        quandoo_merchants = get_quandoo_merchants()
 
-    print()
+        update_res_tags(quandoo_merchants)
+        cancelled_orders(quandoo_bookings, archtics_bookings, quandoo_merchants)
+        new_bookings(quandoo_bookings, archtics_bookings, quandoo_merchants)
+
+        input("ALL FINISHED, you may quit")
+
+    except UserError as e:
+        print(f'USER_ERROR: {e}', file=sys.stderr)
+        input()
+        # raise e
+
+    except quandoo.Error.QuandooException as e:
+        traceback.print_exc(file=sys.stdout)
+        print(f'QUANDOO_ERROR: {get_full_class_name(e)} {e}', file=sys.stderr)
+        input()
+        # raise e
+
+    except Exception as e:
+        traceback.print_exc(file=sys.stdout)
+        print(f'PROGRAM ERROR: {get_full_class_name(e)} {e}', file=sys.stderr)
+        input()
+        # raise e
 
 
 def get_quandoo_bookings():
@@ -55,13 +86,6 @@ def new_bookings(quandoo_bookings, archtics_bookings, quandoo_merchants):
     print("START:    Adding bookings that are in Archtics but not in Quandoo")
     cur_event, cur_rest = None, None
     for index, booking in archtics_bookings.iterrows():
-        if cur_rest != booking['event_name'][:4]:
-            cur_rest = booking['event_name'][:4]
-
-        if booking['event_name'] != cur_event:
-            cur_event = booking['event_name']
-            print('\n' + '-' * 20 + booking['event_name'] + '-' * 20 + '\n')
-
         dt = parse(f'{booking["event_date"]} {booking["event_time"]}', dayfirst=True)
         qdt = QuandooDatetime(dt)
 
@@ -71,14 +95,6 @@ def new_bookings(quandoo_bookings, archtics_bookings, quandoo_merchants):
         if index in quandoo_bookings.index:
             continue
 
-        make_booking(booking, quandoo_bookings, quandoo_merchants)
-    print("FINISHED: Adding bookings that are in Archtics but not in Quandoo")
-
-
-def cancelled_orders(quandoo_bookings, archtics_bookings, quandoo_merchants):
-    print("START:    Removing bookings that are in Quandoo but not in Archtics")
-    cur_event, cur_rest = None, None
-    for index, booking in quandoo_bookings.iterrows():
         if cur_rest != booking['event_name'][:4]:
             cur_rest = booking['event_name'][:4]
 
@@ -86,6 +102,14 @@ def cancelled_orders(quandoo_bookings, archtics_bookings, quandoo_merchants):
             cur_event = booking['event_name']
             print('\n' + '-' * 20 + booking['event_name'] + '-' * 20 + '\n')
 
+        make_booking(booking, quandoo_bookings, quandoo_merchants)
+    print("FINISHED: Adding bookings that are in Archtics but not in Quandoo\n")
+
+
+def cancelled_orders(quandoo_bookings, archtics_bookings, quandoo_merchants):
+    print("START:    Removing bookings that are in Quandoo but not in Archtics")
+    cur_event, cur_rest = None, None
+    for index, booking in quandoo_bookings.iterrows():
         dt = parse(f'{booking["event_date"]} {booking["event_time"]}', dayfirst=True)
         qdt = QuandooDatetime(dt)
 
@@ -95,8 +119,15 @@ def cancelled_orders(quandoo_bookings, archtics_bookings, quandoo_merchants):
         if index in archtics_bookings.index:
             continue
 
+        if cur_rest != booking['event_name'][:4]:
+            cur_rest = booking['event_name'][:4]
+
+        if booking['event_name'] != cur_event:
+            cur_event = booking['event_name']
+            print('\n' + '-' * 20 + booking['event_name'] + '-' * 20 + '\n')
+
         cancel_booking(booking, quandoo_bookings)
-    print("FINISHED: Removing bookings that are in Quandoo but not in Archtics")
+    print("FINISHED: Removing bookings that are in Quandoo but not in Archtics\n")
 
 
 def make_booking(booking: pd.Series, quandoo_bookings: pd.DataFrame, quandoo_merchants: pd.DataFrame):
@@ -163,7 +194,7 @@ def make_booking(booking: pd.Series, quandoo_bookings: pd.DataFrame, quandoo_mer
             print("\nFAILURE: {}".format(e))
             print(f"\t{booking['company_name'] if booking['company_name'] else ''} {booking['full_name']}")
             print(f"\t{booking['pax']} people at {quandoo_merchant['merchant_name'].values[0]} on {qdt.pretty_date()}")
-            print("Rearrange tables or add table combos to accommodate the booking")
+            print("\tRearrange tables or add table combos to accommodate the booking")
             i = input("[ENTER] to try again, [skip] to skip, [skipall] to auto skip any remaining\n")
             if i.upper() == 'SKIP':
                 return
@@ -191,7 +222,7 @@ def get_tag(event_name, quandoo_merchants):
         if tag['name'].lower() == quandoo_merchant['reservation_tag'].values[0].lower():
             return tag['id']
 
-    raise Exception(f'{event_name} has no reservation tag')
+    raise UserError(f"{quandoo_merchant['merchant_name'].values[0]} - no reservation tag found for '{quandoo_merchant['reservation_tag'].values[0]}' check quandoo_merchant.json is incorrect https://github.com/fraser-langton/QuandooScripter#3-configure-integration")
 
 
 def update_res_tags(quandoo_merchants):
@@ -210,7 +241,7 @@ def update_res_tags(quandoo_merchants):
         d[quandoo_merchant['merchant_id']] = tags
     with open('quandoo_tags.json', 'w') as f:
         json.dump(d, f)
-    print("FINISHED: Getting most up to date reservation tags from Quandoo")
+    print("FINISHED: Getting most up to date reservation tags from Quandoo\n")
 
 
 def get_full_class_name(obj):
@@ -221,23 +252,21 @@ def get_full_class_name(obj):
 
 
 if __name__ == '__main__':
-    try:
-        load_dotenv()
-        AUTH_TOKEN = os.environ.get('AUTH_TOKEN')
-        AGENT_ID = os.environ.get('AGENT_ID')
-        if not all([AUTH_TOKEN, AGENT_ID]):
-            raise Exception(f'ERROR: "AUTH_TOKEN" and/or "AGENT_ID" not in .env file, ensure these are added')
+    args = sys.argv
+
+    if len(args) == 1:
         main()
-        input("ALL FINISHED, you may quit")
 
-    except quandoo.Error.QuandooException as e:
-        traceback.print_exc(file=sys.stdout)
-        print(f'QUANDOO_ERROR: {get_full_class_name(e)} {e}', file=sys.stderr)
-        input()
-        # raise e
+    elif args[1] == 'quandoo_bookings':
+        quandoo_bookings = get_quandoo_bookings()
+        quandoo_bookings.to_csv(f'output/quandoo_bookings {datetime.now().strftime("%d-%m-%Y %H%M")}.csv')
 
-    except Exception as e:
-        traceback.print_exc(file=sys.stdout)
-        print(f'PROGRAM ERROR: {get_full_class_name(e)} {e}', file=sys.stderr)
-        input()
-        # raise e
+    elif args[1] == 'quandoo_merchants':
+        quandoo_merchants = get_quandoo_merchants()
+        quandoo_merchants.to_csv(f'output/quandoo_merchants {datetime.now().strftime("%Y-%m-%d %H%M")}.csv')
+
+    elif args[1] == 'test':
+        print(quandoo.status())
+
+    else:
+        input(f"'{' '.join(args)}' not recognised")

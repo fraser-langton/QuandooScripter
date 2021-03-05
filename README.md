@@ -48,7 +48,7 @@ Create a new _.env_ file (name it that exactly)
 ![alt text](https://i.ibb.co/nCDmKFt/Screenshot-2021-03-05-125518.png)
  
 Open it (any text editor) and paste and replace the below with the authentication details you 
-obtained from Quandoo 
+obtained from Quandoo or the confluence documentation.
 ```
 AUTH_TOKEN=<auth_token>
 AGENT_ID=<agent_id>
@@ -75,6 +75,17 @@ In the project directory (QuandooScripter-master) open a **PowerShell Window**
 ![alt text](https://i.ibb.co/fn2QFd7/Screenshot-2021-03-05-135829.png)
 
 Copy `venv\Scripts\python run.py` and press Enter
+
+
+## Performing an audit
+
+If you need to check bookings to ensure correctness, you should compare the report from Quandoo business centre  
+(or delivered to email) to the report from this. 
+
+You can export a report of all bookings that are active from this program by calling 
+`venv\Scripts\python run.py quandoo_bookings` _quandoo_bookings (datetime).csv_ will appear in the output directory
+
+_**reservation_id**_ should appear in both report and you can use this to cross check
 
 
 ## FAQ
