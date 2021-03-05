@@ -47,12 +47,17 @@ If you don't know how to edit JSON use [this editor](https://jsoneditoronline.or
 
 
 #### .env
-Create a new _.env_ file (name it that exactly) replace the below with the authentication details you 
+Create a new _.env_ file (name it that exactly)
+![alt text](https://i.ibb.co/mXzC7kj/Screenshot-2021-03-05-125447.png)
+![alt text](https://i.ibb.co/nCDmKFt/Screenshot-2021-03-05-125518.png)
+ 
+Open it (any text editor) and paste and replace the below with the authentication details you 
 obtained from Quandoo 
 ```
 AUTH_TOKEN=<auth_token>
 AGENT_ID=<agent_id>
 ```
+Save the file
 
 ### 4. Create a new venv environment and install dependencies
 In the project directory (QuandooScripter-master) open a **PowerShell Window** 

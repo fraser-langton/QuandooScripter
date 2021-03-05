@@ -1,3 +1,5 @@
+import sys
+import traceback
 import json
 import os
 import re
@@ -223,7 +225,15 @@ if __name__ == '__main__':
         if not all([AUTH_TOKEN, AGENT_ID]):
             raise Exception(f'ERROR: "AUTH_TOKEN" and/or "AGENT_ID" not in .env file, ensure these are added')
         main()
+
     except quandoo.Error.QuandooException as e:
-        input(f'{get_full_class_name(e)} {e} - This is a quandoo error')
+        traceback.print_exc(file=sys.stdout)
+        print(f'{get_full_class_name(e)} {e} - This is a quandoo error', file=sys.stderr)
+        input()
+        # raise e
+
     except Exception as e:
-        input(f'{get_full_class_name(e)} {e} - This is a program error, try to debug')
+        traceback.print_exc(file=sys.stdout)
+        print(f'{get_full_class_name(e)} {e} - This is a program error, try to debug', file=sys.stderr)
+        input()
+        # raise e
