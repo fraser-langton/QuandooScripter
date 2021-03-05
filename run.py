@@ -10,12 +10,6 @@ from quandoo.QuandooModel import QuandooDatetime
 
 from dotenv import load_dotenv
 
-try:
-    load_dotenv()
-    AUTH_TOKEN = os.environ.get('AUTH_TOKEN')
-    AGENT_ID = os.environ.get('AGENT_ID')
-except Exception as e:
-    input(e)
 
 SKIP_ALL = False
 
@@ -196,6 +190,7 @@ def get_tag(event_name, quandoo_merchants):
 
 
 def update_res_tags(quandoo_merchants):
+    print("START: Getting most up to date reservation tags from Quandoo... This should take a few seconds per merchant")
     d = {}
     for i, quandoo_merchant in quandoo_merchants.iterrows():
         merchant = quandoo.Merchant(
@@ -210,10 +205,25 @@ def update_res_tags(quandoo_merchants):
         d[quandoo_merchant['merchant_id']] = tags
     with open('quandoo_tags.json', 'w') as f:
         json.dump(d, f)
+    print("FINISHED: Getting most up to date reservation tags from Quandoo")
+
+
+def get_full_class_name(obj):
+    module = obj.__class__.__module__
+    if module is None or module == str.__class__.__module__:
+        return obj.__class__.__name__
+    return module + '.' + obj.__class__.__name__
 
 
 if __name__ == '__main__':
     try:
+        load_dotenv()
+        AUTH_TOKEN = os.environ.get('AUTH_TOKEN')
+        AGENT_ID = os.environ.get('AGENT_ID')
+        if not all([AUTH_TOKEN, AGENT_ID]):
+            raise Exception(f'ERROR: "AUTH_TOKEN" and/or "AGENT_ID" not in .env file, ensure these are added')
         main()
+    except quandoo.Error.QuandooException as e:
+        input(f'{get_full_class_name(e)} {e} - This is a quandoo error')
     except Exception as e:
-        input(e)
+        input(f'{get_full_class_name(e)} {e} - This is a program error, try to debug')

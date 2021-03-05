@@ -1,26 +1,27 @@
 # Quandoo Scripter
-###### Developed by [Fraser Langton](https://github.com/fraser-langton) for integration between Archtics and Quandoo
+###### Developed by [Fraser Langton](https://github.com/fraser-langton) for Tennis Australia for integration between Archtics and Quandoo
 
 
 ## Getting started
 
-#### 1. Download Python
+### 1. Download Python
 Download [Python](https://www.python.org/downloads/) (3.x) - https://www.python.org/downloads/
 
 ![alt text](https://i.ibb.co/ygr9F0c/Capture.png)
 
 
-#### 2. Download this repository
+### 2. Download this repository
 Either
 
-Download repository as a zip file:
+[Download](https://github.com/fraser-langton/QuandooScripter/archive/master.zip) repository as a zip file:
 ![alt text](https://i.ibb.co/6wQHt2L/Screenshot-2021-03-05-111248.png)
 
 Or clone the repository and use your IDE (for developers)
 
 
-#### 3. Configure integration
-In _quandoo_merchants.json_ add the merchant-archtics pairs, see example below:
+### 3. Configure integration
+#### quandoo_merchants.json
+Add the merchant-archtics pairs, see example below:
 ```
 {
     "merchant_id": "49293",
@@ -45,7 +46,15 @@ The tag you want the bookings to have - **this must match a reservation tag from
 If you don't know how to edit JSON use [this editor](https://jsoneditoronline.org/) or do some research online
 
 
-#### 4. Create a new venv environment and install dependencies
+#### .env
+Create a new _.env_ file (name it that exactly) replace the below with the authentication details you 
+obtained from Quandoo 
+```
+AUTH_TOKEN=<auth_token>
+AGENT_ID=<agent_id>
+```
+
+### 4. Create a new venv environment and install dependencies
 In the project directory (QuandooScripter-master) open a **PowerShell Window** 
 ![alt text](https://i.ibb.co/2W87rPN/Screenshot-2021-03-05-111917.png)
 
