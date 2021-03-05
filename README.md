@@ -21,7 +21,7 @@ Or clone the repository and use your IDE (for developers)
 
 ### 3. Configure integration
 #### quandoo_merchants.json
-Add the merchant-archtics pairs, see example below:
+Add the merchant-archtics pairs in the file _quandoo_merchants.json_, see example below:
 ```
 {
     "merchant_id": "49293",
@@ -30,18 +30,14 @@ Add the merchant-archtics pairs, see example below:
     "reservation_tag": "Pre-Paid Package"
 }
 ```
-`merchant_id`\
-The Quandoo merchant id, this can be obtained from Quandoo representative or by looking in the URL 
+`merchant_id` - The Quandoo merchant id, this can be obtained from Quandoo representative or by looking in the URL 
 in Business centre
 
-`merchant_name`\
-Up to you, it is not critical
+`merchant_name`- Up to you, it is not critical
 
-`archtics_code`\
-The first 4 characters of the archtics event name - **this must match the event names in _quandoo.csv_**
+`archtics_code` - The **first 4 characters** of the archtics event name - **this must match the event names in _quandoo.csv_**
 
-`reservation_tag`\
-The tag you want the bookings to have - **this must match a reservation tag from the business centre**
+`reservation_tag` - The tag you want the bookings to have - **this must match a reservation tag from the business centre**
 
 If you don't know how to edit JSON use [this editor](https://jsoneditoronline.org/) or do some research online
 
@@ -83,6 +79,11 @@ Copy `venv\Scripts\python run.py` and press Enter
 
 ## FAQ
 
-##### Q. I want to add a new restaurant
-A. See [Getting started - 3. Configure integration](#3-configure-integration), add an entry
+##### I want to add a new restaurant
+See [Getting started - 3. Configure integration](#3-configure-integration), add an entry.   
 
+##### I got a _QUANDOO_ERROR_
+There might be something wrong with Quandoo or the way the merchant is configured on the business centre. If you can't figure out, you can try asking a Quandoo representative.
+
+##### I got a _PROGRAM_ERROR_
+Try to figure out what the error is saying and ensure the configuration is correct, if you can't sort it out [log an issue](https://github.com/fraser-langton/QuandooScripter/issues/new) - **copy and paste the full error** and _quandoo.csv_, _quandoo_bookings.json_, _quandoo_merchants.json_ **in a ZIP file** as per [example](https://github.com/fraser-langton/QuandooScripter/issues/1) and it can be addressed if a developer available.

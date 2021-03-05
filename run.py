@@ -52,6 +52,7 @@ def get_quandoo_merchants():
 
 
 def new_bookings(quandoo_bookings, archtics_bookings, quandoo_merchants):
+    print("START:    Adding bookings that are in Archtics but not in Quandoo")
     cur_event, cur_rest = None, None
     for index, booking in archtics_bookings.iterrows():
         if cur_rest != booking['event_name'][:4]:
@@ -71,9 +72,11 @@ def new_bookings(quandoo_bookings, archtics_bookings, quandoo_merchants):
             continue
 
         make_booking(booking, quandoo_bookings, quandoo_merchants)
+    print("FINISHED: Adding bookings that are in Archtics but not in Quandoo")
 
 
 def cancelled_orders(quandoo_bookings, archtics_bookings, quandoo_merchants):
+    print("START:    Removing bookings that are in Quandoo but not in Archtics")
     cur_event, cur_rest = None, None
     for index, booking in quandoo_bookings.iterrows():
         if cur_rest != booking['event_name'][:4]:
@@ -93,6 +96,7 @@ def cancelled_orders(quandoo_bookings, archtics_bookings, quandoo_merchants):
             continue
 
         cancel_booking(booking, quandoo_bookings)
+    print("FINISHED: Removing bookings that are in Quandoo but not in Archtics")
 
 
 def make_booking(booking: pd.Series, quandoo_bookings: pd.DataFrame, quandoo_merchants: pd.DataFrame):
@@ -157,10 +161,9 @@ def make_booking(booking: pd.Series, quandoo_bookings: pd.DataFrame, quandoo_mer
             if SKIP_ALL:
                 return
             print("\nFAILURE: {}".format(e))
-            print('\t' + booking['acct_id'], booking['order_num'],
-                  booking['company_name'] if booking['company_name'] else '', booking['full_name'])
-            merchant_name = quandoo_merchant['merchant_name'].values[0]
-            print(f"\t{merchant_name}\n\t{qdt.pretty_date()}\n\t{booking['pax']}")
+            print(f"\t{booking['company_name'] if booking['company_name'] else ''} {booking['full_name']}")
+            print(f"\t{booking['pax']} people at {quandoo_merchant['merchant_name'].values[0]} on {qdt.pretty_date()}")
+            print("Rearrange tables or add table combos to accommodate the booking")
             i = input("[ENTER] to try again, [skip] to skip, [skipall] to auto skip any remaining\n")
             if i.upper() == 'SKIP':
                 return
@@ -192,7 +195,7 @@ def get_tag(event_name, quandoo_merchants):
 
 
 def update_res_tags(quandoo_merchants):
-    print("START: Getting most up to date reservation tags from Quandoo... This should take a few seconds per merchant")
+    print("START:    Getting most up to date reservation tags from Quandoo... This should take a few seconds per merchant")
     d = {}
     for i, quandoo_merchant in quandoo_merchants.iterrows():
         merchant = quandoo.Merchant(
@@ -225,15 +228,16 @@ if __name__ == '__main__':
         if not all([AUTH_TOKEN, AGENT_ID]):
             raise Exception(f'ERROR: "AUTH_TOKEN" and/or "AGENT_ID" not in .env file, ensure these are added')
         main()
+        input("ALL FINISHED, you may quit")
 
     except quandoo.Error.QuandooException as e:
         traceback.print_exc(file=sys.stdout)
-        print(f'{get_full_class_name(e)} {e} - This is a quandoo error', file=sys.stderr)
+        print(f'QUANDOO_ERROR: {get_full_class_name(e)} {e}', file=sys.stderr)
         input()
         # raise e
 
     except Exception as e:
         traceback.print_exc(file=sys.stdout)
-        print(f'{get_full_class_name(e)} {e} - This is a program error, try to debug', file=sys.stderr)
+        print(f'PROGRAM ERROR: {get_full_class_name(e)} {e}', file=sys.stderr)
         input()
         # raise e
