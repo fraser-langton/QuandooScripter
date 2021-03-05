@@ -74,4 +74,10 @@ In the project directory (QuandooScripter-master) open a **PowerShell Window**
 ![alt text](https://i.ibb.co/2W87rPN/Screenshot-2021-03-05-111917.png)
 
 Copy `venv\Scripts\python run.py` and press Enter
- 
+
+
+## FAQ
+
+##### Q. I want to add a new restaurant
+A. See [Getting started - 3. Configure integration](#3.-Configure-integration), add an entry
+
