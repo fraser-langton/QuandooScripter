@@ -61,7 +61,7 @@ Save the file
 
 ### 4. Create a new venv environment and install dependencies
 In the project directory (QuandooScripter-master) open a **PowerShell Window** 
-![alt text](https://i.ibb.co/2W87rPN/Screenshot-2021-03-05-111917.png)
+![alt text](https://i.ibb.co/fn2QFd7/Screenshot-2021-03-05-135829.png)
 
 Copy `python -m venv venv` and press Enter
 
@@ -76,7 +76,7 @@ Copy `venv\Scripts\pip install -r requirements.txt` and press Enter
 
 ### 3. Run program
 In the project directory (QuandooScripter-master) open a **PowerShell Window** 
-![alt text](https://i.ibb.co/2W87rPN/Screenshot-2021-03-05-111917.png)
+![alt text](https://i.ibb.co/fn2QFd7/Screenshot-2021-03-05-135829.png)
 
 Copy `venv\Scripts\python run.py` and press Enter
 
